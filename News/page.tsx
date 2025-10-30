@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer'; 
 
@@ -17,6 +18,10 @@ const ArrowRight = () => (
 
 
 export default function App() { 
+  const scrollToFooter = () => {
+    const el = document.getElementById('site-footer');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
   const contentRef1 = useRef<HTMLDivElement | null>(null);
   const contentRef2 = useRef<HTMLDivElement | null>(null);
   const [open1, setOpen1] = useState(true);
@@ -64,19 +69,50 @@ export default function App() {
       el.style.opacity = '0';
     }
   }, [open2]);
+  
+  // scroll to next section when clicking the arrow image (jQuery if available, otherwise plain JS)
+  useEffect(() => {
+    const selector = '.arrow-scroll';
+    const $ = (window as any).jQuery || (window as any).$;
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      const btn = (e.currentTarget || e.target) as HTMLElement;
+      // find hero container marked with data-hero
+      const hero = btn.closest('[data-hero]') as HTMLElement | null;
+      const target = hero?.nextElementSibling as HTMLElement | null;
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    if ($) {
+      // jQuery present
+      $(selector).on('click.scrollToNext', handler);
+    } else {
+      document.querySelectorAll<HTMLElement>(selector).forEach(el => el.addEventListener('click', handler));
+    }
+
+    return () => {
+      if ($) {
+        $(selector).off('.scrollToNext');
+      } else {
+        document.querySelectorAll<HTMLElement>(selector).forEach(el => el.removeEventListener('click', handler));
+      }
+    };
+  }, []);
+  
   return (
-    <div className="min-h-screen bg-beige">
+    <div className="min-h-screen bg-beige"> 
       <Header />
 
-      <div className='relative flex items-center' style={{ backgroundImage: 'url(./thumbnail03.png)', backgroundRepeat: 'no-repeat', backgroundPosition: 'center center', backgroundSize: 'cover', height: '435px', }} >
-        <div className='absolute top-0 left-0 right-0 bottom-0 mix-blend-multiply' style={{ background: 'var(--custom-gradient)' }}> </div>
+      <div data-hero className='relative flex items-center' style={{ backgroundImage: 'url(./thumbnail03.png)', backgroundRepeat: 'no-repeat', backgroundPosition: 'center center', backgroundSize: 'cover', height: '430px', }} >
+        <div className='absolute top-0 left-0 right-0 bottom-0 mix-blend-multiply bg-[linear-gradient(0deg,rgba(0,0,0,0.3),rgba(0,0,0,0.3))] lg:bg-[linear-gradient(270deg,rgba(26,27,30,0)_65.39%,#1A1B1E_100%)]'> </div>
         <div className='max-w-[1400px] mx-auto w-full px-5 md:px-10 lg:px-20 relative z-10'>
             <div className='lg:max-w-[560px]'> 
                 <h1 className='text-center lg:text-left mt-9 mb-[70px] font-medium text-[50px] leading-[50px] md:text-[70px] md:leading-[70px] text-white'>
                   News 
                 </h1> 
                 
-                <img className='cursor-pointer m-auto lg:m-0 block' alt="" src="./arrow-down-scroll.svg"/>
+                <img className='cursor-pointer m-auto lg:m-0 block arrow-scroll' alt="" src="./arrow-down-scroll.svg"/>
                   
             </div>
         </div>
@@ -102,7 +138,7 @@ export default function App() {
                                   Lorem ipsum dolor sit amet consectetur. Tortor in egestas tellus tristique ultricies vel. Lectus in lectus egestas dictum m...
                                 </p>
                               </div>
-                              <button className="w-full sm:w-auto text-sm font-medium text-white bg-primary h-11 px-10">Contact us</button>
+                              <Link to="/News/single" className="inline-block w-full sm:w-auto text-sm leading-[44px] font-medium text-white bg-primary h-11 px-10 hover:bg-[#CCAB80] hover:text-[#2F324A] transition duration-200">Read more</Link>
                           </div>
                      </div>
                      <div>
@@ -121,7 +157,7 @@ export default function App() {
                                   Lorem ipsum dolor sit amet consectetur. Tortor in egestas tellus tristique ultricies vel. Lectus in lectus egestas dictum m...
                                 </p>
                               </div>
-                              <button className="w-full sm:w-auto text-sm font-medium text-white bg-primary h-11 px-10">Contact us</button>
+                              <Link to="/News/single" className="inline-block w-full sm:w-auto text-sm leading-[44px] font-medium text-white bg-primary h-11 px-10 hover:bg-[#CCAB80] hover:text-[#2F324A] transition duration-200">Read more</Link>
                           </div>
                      </div> 
                      <div>
@@ -140,7 +176,7 @@ export default function App() {
                                   Lorem ipsum dolor sit amet consectetur. Tortor in egestas tellus tristique ultricies vel. Lectus in lectus egestas dictum m...
                                 </p>
                               </div>
-                              <button className="w-full sm:w-auto text-sm font-medium text-white bg-primary h-11 px-10">Contact us</button>
+                              <Link to="/News/single" className="inline-block w-full sm:w-auto text-sm leading-[44px] font-medium text-white bg-primary h-11 px-10 hover:bg-[#CCAB80] hover:text-[#2F324A] transition duration-200">Read more</Link>
                           </div>
                      </div>              
                 </div>                

@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer'; 
 
@@ -17,6 +18,11 @@ const ArrowRight = () => (
 
 
 export default function App() { 
+  const scrollToFooter = () => {
+    const el = document.getElementById('site-footer');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   // restore refs and toggle state used in the JSX
   const contentRef1 = useRef<HTMLDivElement | null>(null);
   const contentRef2 = useRef<HTMLDivElement | null>(null);
@@ -65,12 +71,40 @@ export default function App() {
     }
   }, [open2]);
 
+  // scroll to next section when clicking the arrow image (jQuery if available, otherwise plain JS)
+  useEffect(() => {
+    const selector = '.arrow-scroll';
+    const $ = (window as any).jQuery || (window as any).$;
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      const btn = (e.currentTarget || e.target) as HTMLElement;
+      const hero = btn.closest('.relative.flex.items-center') || btn.closest('div');
+      const target = hero?.nextElementSibling as HTMLElement | null;
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    if ($) {
+      $(selector).on('click.scrollToNext', handler);
+    } else {
+      document.querySelectorAll<HTMLElement>(selector).forEach(el => el.addEventListener('click', handler));
+    }
+
+    return () => {
+      if ($) {
+        $(selector).off('.scrollToNext');
+      } else {
+        document.querySelectorAll<HTMLElement>(selector).forEach(el => el.removeEventListener('click', handler));
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-beige">
       <Header />
 
       <div className='relative flex items-center' style={{ backgroundImage: 'url(./thumbnail01.jpg)', backgroundRepeat: 'no-repeat', backgroundPosition: 'center center', backgroundSize: 'cover', height: '645px', }} >
-        <div className='absolute top-0 left-0 right-0 bottom-0 mix-blend-multiply' style={{ background: 'var(--custom-gradient)' }}> </div>
+        <div className='absolute top-0 left-0 right-0 bottom-0 mix-blend-multiply bg-[linear-gradient(0deg,rgba(0,0,0,0.3),rgba(0,0,0,0.3))] lg:bg-[linear-gradient(270deg,rgba(26,27,30,0)_65.39%,#1A1B1E_100%)]'> </div>
         <div className='max-w-[1400px] mx-auto w-full px-10 lg:px-20 relative z-10'>
             <div className='lg:max-w-[560px]'> 
                 <h1 className='text-center lg:text-left mt-9 mb-[70px] font-medium text-[50px] leading-[50px] md:text-[70px] md:leading-[70px] text-white'>
@@ -78,7 +112,7 @@ export default function App() {
                   <span className='text-secondary'>take care of your business’s accounting</span>
                 </h1> 
                 
-                <img className='cursor-pointer m-auto lg:m-0 block' alt="" src="./arrow-down-scroll.svg"/>
+                <img className='cursor-pointer m-auto lg:m-0 block arrow-scroll' alt="" src="./arrow-down-scroll.svg"/>
                   
             </div>
         </div>
@@ -97,7 +131,7 @@ export default function App() {
                         </h2>                        
                       </div>
                       <div className='md:pl-[52px]'>
-                        <button className='text-sm font-medium text-white bg-primary h-11 px-10'>Contact us</button>
+                        <button onClick={scrollToFooter} className='text-sm font-medium text-white bg-primary h-11 px-10 hover:bg-[#CCAB80] hover:text-[#2F324A] transition duration-200'>Contact us</button>
                       </div>
                   </div>
                   <div className='mt-10 md:mt-0 w-full md:w-[calc(100%-240px)] lg:w-[calc(100%-400px)] flex md:justify-end'>
@@ -124,7 +158,7 @@ export default function App() {
                       </div>
                   </div>
               </div>
-              <img className='absolute bottom-0 left-5 md:left-10 lg:left-20' alt="" src="./Vector02.svg"/>
+              <img className='absolute bottom-0 left-0' alt="" src="./Vector02.svg"/>
           </div>
           
       </div>
@@ -134,16 +168,16 @@ export default function App() {
                   <div className='box-question'>
                       <div className='bg-white border-2 border-[#CDCCD8] shadow-[0px_20px_50px_-12px_rgba(0,0,0,0.08)] p-6 mb-4'>
                           <div className='flex items-center'>
-                              <img className='mr-4' alt="" src="./public/icon1.svg"/>  
+                              <img className='mr-4' alt="" src="./icon1.svg"/>  
                               <h3 onClick={() => setOpen1(o => !o)} className='font-medium text-xl leading-[30px] text-secondary relative pr-10 w-full cursor-pointer'>
                                   Chartered Accountants
                                   {open1 ? (
                                     <span className='absolute top-0 right-0 w-[30px] h-[30px] bg-[#2F324A] rounded-full flex items-center justify-center'>
-                                      <img className='' alt="" src="./public/arrow-down.svg" style={{ transform: 'rotate(180deg)', transition: 'transform 220ms ease' }} />
+                                      <img className='' alt="" src="./arrow-down.svg" style={{ transform: 'rotate(180deg)', transition: 'transform 220ms ease' }} />
                                     </span>
                                   ) : (
                                     <span className='absolute top-0 right-0 w-[30px] h-[30px] bg-[#ffffff] shadow-[6px_10px_20px_rgba(0,0,0,0.12)] rounded-full flex items-center justify-center'>
-                                      <img className='' alt="" src="./public/arrow-down-white.svg" style={{ transform: 'rotate(0deg)', transition: 'transform 220ms ease' }} />
+                                      <img className='' alt="" src="./arrow-down-white.svg" style={{ transform: 'rotate(0deg)', transition: 'transform 220ms ease' }} />
                                     </span>
                                   )}
                               </h3>
@@ -178,16 +212,16 @@ export default function App() {
                       </div>
                       <div className='bg-white border-2 border-[#CDCCD8] shadow-[0px_20px_50px_-12px_rgba(0,0,0,0.08)] p-6 mb-4'>
                           <div className='flex items-center'>
-                              <img className='mr-4' alt="" src="./public/icon1.svg"/>  
+                              <img className='mr-4' alt="" src="./icon1.svg"/>  
                               <h3 onClick={() => setOpen2(o => !o)} className='font-medium text-xl leading-[30px] text-secondary relative pr-10 w-full cursor-pointer'>
                                   Chartered Accountants
                                   {open2 ? (
                                     <span className='absolute top-0 right-0 w-[30px] h-[30px] bg-[#2F324A] rounded-full flex items-center justify-center'>
-                                      <img className='' alt="" src="./public/arrow-down.svg" style={{ transform: 'rotate(180deg)', transition: 'transform 220ms ease' }} />
-                                    </span>
+                                      <img className='' alt="" src="./arrow-down.svg" style={{ transform: 'rotate(180deg)', transition: 'transform 220ms ease' }} />
+                                    </span> 
                                   ) : (
                                     <span className='absolute top-0 right-0 w-[30px] h-[30px] bg-[#ffffff] shadow-[6px_10px_20px_rgba(0,0,0,0.12)] rounded-full flex items-center justify-center'>
-                                      <img className='' alt="" src="./public/arrow-down-white.svg" style={{ transform: 'rotate(0deg)', transition: 'transform 220ms ease' }} />
+                                      <img className='' alt="" src="./arrow-down-white.svg" style={{ transform: 'rotate(0deg)', transition: 'transform 220ms ease' }} />
                                     </span>
                                   )}
                               </h3>
@@ -240,12 +274,12 @@ export default function App() {
                     <h2 className='font-normal text-2xl leading-[34px] text-primary'>
                        Our News           
                     </h2>       
-                    <a href="#" className='font-normal text-sm leading-[26px] flex items-center'>
+                    <Link to="/News" className='font-normal text-sm leading-[26px] flex items-center'>
                          All News
                          <svg className='ml-[17px]' width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                          <path d="M10.5 3.75L15.75 9M15.75 9L10.5 14.25M15.75 9L2.25 9" stroke="#2F324A" stroke-linecap="round" stroke-linejoin="round"/>
                          </svg> 
-                    </a>       
+                    </Link>       
                 </div> 
                 <div className='grid md:grid-cols-3 gap-10'>
                      <div>
@@ -264,7 +298,7 @@ export default function App() {
                                   Lorem ipsum dolor sit amet consectetur. Tortor in egestas tellus tristique ultricies vel. Lectus in lectus egestas dictum m...
                                 </p>
                               </div>
-                              <button className="w-full sm:w-auto text-sm font-medium text-white bg-primary h-11 px-10">Contact us</button>
+                              <Link to="/News/single" className="inline-block w-full sm:w-auto text-sm leading-[44px] font-medium text-white bg-primary h-11 px-10 hover:bg-[#CCAB80] hover:text-[#2F324A] transition duration-200">Read more</Link>
                           </div>
                      </div>
                      <div>
@@ -283,7 +317,7 @@ export default function App() {
                                   Lorem ipsum dolor sit amet consectetur. Tortor in egestas tellus tristique ultricies vel. Lectus in lectus egestas dictum m...
                                 </p>
                               </div>
-                              <button className="w-full sm:w-auto text-sm font-medium text-white bg-primary h-11 px-10">Contact us</button>
+                              <Link to="/News/single" className="inline-block w-full sm:w-auto text-sm leading-[44px] font-medium text-white bg-primary h-11 px-10 hover:bg-[#CCAB80] hover:text-[#2F324A] transition duration-200">Read more</Link>
                           </div>
                      </div> 
                      <div>
@@ -302,7 +336,7 @@ export default function App() {
                                   Lorem ipsum dolor sit amet consectetur. Tortor in egestas tellus tristique ultricies vel. Lectus in lectus egestas dictum m...
                                 </p>
                               </div>
-                              <button className="w-full sm:w-auto text-sm font-medium text-white bg-primary h-11 px-10">Contact us</button>
+                              <Link to="/News/single" className="inline-block w-full sm:w-auto text-sm leading-[44px] font-medium text-white bg-primary h-11 px-10 hover:bg-[#CCAB80] hover:text-[#2F324A] transition duration-200">Read more</Link>
                           </div>
                      </div>              
                 </div>                

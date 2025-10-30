@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  # QUAN TRỌNG: Đặt thư mục publish về 'dist'
+  publish = "dist" 
+
+# XÓA HOÀN TOÀN MỤC [[plugins]] NẾU CÓ
+
+# Giữ quy tắc redirects để khắc phục lỗi trang con
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
