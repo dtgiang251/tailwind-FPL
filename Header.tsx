@@ -21,7 +21,7 @@ export default function Header() {
 		const menu = document.querySelector<HTMLElement>('.menu-click');
 		if (!svgOpen || !menu) return;
 
-		// inject CSS to make menu overlay fullscreen when body has .menu-open
+		// inject CSS to make menu overlay fullscreen when body has .menu-open ádá
 		if (!document.getElementById('menu-open-style')) {
 			const style = document.createElement('style');
 			style.id = 'menu-open-style';
